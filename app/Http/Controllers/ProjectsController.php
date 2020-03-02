@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Project;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ProjectsController extends Controller
 {
@@ -17,8 +18,10 @@ class ProjectsController extends Controller
     {
         $validated = \request()->validate([
             'title' => 'required',
-            'description' => 'required'
+            'description' => 'required',
         ]);
+
+        $validated['owner_id'] = Auth::id();
         Project::create($validated);
         return redirect('/projects');
     }

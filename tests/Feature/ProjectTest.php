@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Project;
+use App\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
@@ -18,7 +19,7 @@ class ProjectTest extends TestCase
 		$this->withoutExceptionHandling();
 
 		$attributes = factory(Project::class)->raw();
-		$this->post('/projects', $attributes)->assertRedirect('/projects');
+		$this->actingAs($this->defaultUser())->post('/projects', $attributes)->assertRedirect('/projects');
 		$this->assertDatabaseHas('projects', $attributes);
 
 		$this->get('/projects/')->assertSee($attributes['title']);
@@ -30,7 +31,9 @@ class ProjectTest extends TestCase
         $attributes = factory(Project::class)->raw([
             'title' => ''
         ]);
-        $this->post('/projects', $attributes)->assertSessionHasErrors('title');
+        $this->actingAs($this->defaultUser())
+            ->post('/projects', $attributes)
+            ->assertSessionHasErrors('title');
     }
 
     /** @test */
@@ -39,7 +42,17 @@ class ProjectTest extends TestCase
         $attributes = factory(Project::class)->raw([
             'description' => ''
         ]);
-        $this->post('/projects', $attributes)->assertSessionHasErrors('description');
+        $this->actingAs($this->defaultUser())
+            ->post('/projects', $attributes)
+            ->assertSessionHasErrors('description');
+    }
+
+    /** @test */
+    public function owner_is_required()
+    {
+        $attributes = factory(Project::class)->raw();
+        $this->post('/projects', $attributes)
+            ->assertRedirect('login');
     }
 
     /** @test */
@@ -48,6 +61,13 @@ class ProjectTest extends TestCase
         $this->withoutExceptionHandling();
 
         $project = factory(Project::class)->create();
-        $this->get('/projects/'.$project->id)->assertSee($project->title)->assertSee($project->description);
+        $this->get('/projects/'.$project->id)
+            ->assertSee($project->title)
+            ->assertSee($project->description);
+    }
+
+    private function defaultUser()
+    {
+        return factory(User::class)->create();
     }
 }
