@@ -18,8 +18,13 @@ class ProjectTest extends TestCase
 	{
 		$this->withoutExceptionHandling();
 
-		$attributes = factory(Project::class)->raw();
-		$this->actingAs($this->defaultUser())->post('/projects', $attributes)->assertRedirect('/projects');
+		$attributes = [
+		    'title' => $this->faker->sentence,
+            'description' => $this->faker->paragraph,
+        ];
+		$this->actingAs($this->defaultUser())
+            ->post('/projects', $attributes)
+            ->assertRedirect('/projects');
 		$this->assertDatabaseHas('projects', $attributes);
 
 		$this->get('/projects/')->assertSee($attributes['title']);
