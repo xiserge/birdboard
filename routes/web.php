@@ -12,19 +12,14 @@
 */
 
 
-use Illuminate\Support\Facades\Route;
-
 Route::get('/', function () {
     return view('home');
 });
 
 Route::get('projects', 'ProjectsController@index');
-Route::post('projects', 'ProjectsController@store')->middleware('auth');
+Route::post('projects', 'ProjectsController@store')
+    ->middleware('auth');
 
 Route::get('projects/{project}', 'ProjectsController@view');
-
-Route::get('test', function(){
-    echo date('Y-m-d H-i-s');
-});
 
 Auth::routes();

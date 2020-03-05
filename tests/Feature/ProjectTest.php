@@ -13,8 +13,7 @@ class ProjectTest extends TestCase
 	use RefreshDatabase;
 	use WithFaker;
 
-	/** @test */
-    public function can_create_project()
+    public function testCanCreateProject()
 	{
 		$this->withoutExceptionHandling();
 
@@ -22,46 +21,42 @@ class ProjectTest extends TestCase
 		    'title' => $this->faker->sentence,
             'description' => $this->faker->paragraph,
         ];
-		$this->actingAs($this->defaultUser())
-            ->post('/projects', $attributes)
+		$this->defaultAuth();
+		$this->post('/projects', $attributes)
             ->assertRedirect('/projects');
 		$this->assertDatabaseHas('projects', $attributes);
 
 		$this->get('/projects/')->assertSee($attributes['title']);
 	}
 
-	/** @test */
-    public function a_title_is_required()
+    public function testTitleRequired()
     {
         $attributes = factory(Project::class)->raw([
             'title' => ''
         ]);
-        $this->actingAs($this->defaultUser())
-            ->post('/projects', $attributes)
+        $this->defaultAuth();
+        $this->post('/projects', $attributes)
             ->assertSessionHasErrors('title');
     }
 
-    /** @test */
-    public function a_description_is_required()
+    public function testDescriptionRequired()
     {
         $attributes = factory(Project::class)->raw([
             'description' => ''
         ]);
-        $this->actingAs($this->defaultUser())
-            ->post('/projects', $attributes)
+        $this->defaultAuth();
+        $this->post('/projects', $attributes)
             ->assertSessionHasErrors('description');
     }
 
-    /** @test */
-    public function owner_is_required()
+    public function testOwnerRequired()
     {
         $attributes = factory(Project::class)->raw();
         $this->post('/projects', $attributes)
             ->assertRedirect('login');
     }
 
-    /** @test */
-    public function an_user_can_view_project()
+    public function testUserCanViewProject()
     {
         $this->withoutExceptionHandling();
 
@@ -71,8 +66,8 @@ class ProjectTest extends TestCase
             ->assertSee($project->description);
     }
 
-    private function defaultUser()
+    private function defaultAuth()
     {
-        return factory(User::class)->create();
+        $this->actingAs(factory(User::class)->create());
     }
 }
