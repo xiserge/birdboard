@@ -1,8 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<ul>
     <h1>{{ $project->title }}</h1>
     <div>{{ $project->description }}</div>
-</ul>
+    <a href="{{ url('/projects') }}">Go back!</a>
 @endsection
