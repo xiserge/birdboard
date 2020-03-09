@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Project;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class ProjectsController extends Controller
 {
