@@ -8,22 +8,27 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
-class ProjectTest extends TestCase
+class ManageProjectsTest extends TestCase
 {
 	use RefreshDatabase;
 	use WithFaker;
 
-    public function testCanCreateProject()
+    public function testAnUserCanCreateProject()
 	{
 		$this->withoutExceptionHandling();
+
+		$this->actingAs(factory(User::class)->create());
+
+		$this->get('/projects/create')->assertStatus(200);
 
 		$attributes = [
 		    'title' => $this->faker->sentence,
             'description' => $this->faker->paragraph,
         ];
-		$this->defaultAuth();
+
 		$this->post('/projects', $attributes)
             ->assertRedirect('/projects');
+
 		$this->assertDatabaseHas('projects', $attributes);
 
 		$this->get('/projects/')->assertSee($attributes['title']);
@@ -49,11 +54,18 @@ class ProjectTest extends TestCase
             ->assertSessionHasErrors('description');
     }
 
-    public function testGuestsCannotCreateProjects()
+    public function testGuestsCannotManageProjects()
     {
-        $attributes = factory(Project::class)->raw();
-        $this->post('/projects', $attributes)
+        $project = factory(Project::class)->create();
+
+        $this->get('/projects/create')->assertRedirect('login');
+
+        $this->post('/projects', $project->toArray())
             ->assertRedirect('login');
+
+        $this->get('/projects')->assertRedirect('login');
+
+        $this->get($project->path())->assertRedirect('login');
     }
 
     public function testUsersCanViewTheirProject()
@@ -67,19 +79,6 @@ class ProjectTest extends TestCase
         $this->get('/projects/'.$project->id)
             ->assertSee($project->title)
             ->assertSee($project->description);
-    }
-
-    public function testGuestsCannotViewProjects()
-    {
-//        $project = factory(Project::class)->create();
-//        $this->get($project->path())->assertRedirect('login');
-        $this->get('/projects')->assertRedirect('login');
-    }
-
-    public function testGuestsCannotViewASingleProject()
-    {
-        $project = factory(Project::class)->create();
-        $this->get($project->path())->assertRedirect('login');
     }
 
     public function testUserCannotSeeProjectsOfOthers()
