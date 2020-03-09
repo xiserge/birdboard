@@ -10,23 +10,26 @@ class ProjectsController extends Controller
 {
     public function index()
     {
-        $projects = Project::all();
+        $projects = auth()->user()->projects;
         return view('projects.index', compact('projects'));
     }
 
     public function store()
     {
-        $validated = \request()->validate([
+        $validated = request()->validate([
             'title' => 'required',
             'description' => 'required',
         ]);
 
-        Auth::user()->projects()->create($validated);
+        auth()->user()->projects()->create($validated);
         return redirect('/projects');
     }
 
     public function view(Project $project)
     {
+        if(auth()->user()->isNot($project->owner)) {
+            abort(403);
+        }
         return view('projects.view', compact('project'));
     }
 }
