@@ -4,6 +4,14 @@
 
 @tailwind utilities;
 
+.button {
+    @apply .bg-blue-500  .text-white .no-underline .rounded-lg .text-sm .py-2 .px-5;
+    box-shadow: 0 2px 7px 0 #b0eaff;
+}
+
+.card {
+    @apply .bg-white .shadow .rounded-lg .p-5;
+}
 
 // Fonts
 //@import url('https://fonts.googleapis.com/css?family=Nunito');

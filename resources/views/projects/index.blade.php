@@ -2,22 +2,23 @@
 
 @section('content')
 
-    <div class="flex items-center mb-3">
-        <h1 class="mr-auto">My Projects</h1>
-        <a href="{{ url('/projects/create') }}" class="btn btn-primary">
-            Create New Project
-        </a>
-    </div>
-
-    <div class="flex">
-        @forelse($projects as $project)
-        <div class="bg-white shadow rounded mr-4 p-5 w-1/3 " style="height: 200px">
-            <h3 class="font-normal text-xl py-4">{{ $project->title }}</h3>
-            <div class="text-gray-500">{{ Str::limit($project->description, 100) }}</div>
+    <header class="flex mb-3 py-4">
+        <div class="flex justify-between items-end w-full">
+            <h2 class="text-gray-500 text-lg font-normal">My Projects</h2>
+            <a href="{{ url('/projects/create') }}" class="button">
+                Create New Project
+            </a>
         </div>
+    </header>
+
+    <main class="lg:flex flex-wrap -mx-3">
+        @forelse($projects as $project)
+            <div class="lg:w-1/3 px-3 pb-6">
+                @include("projects.card")
+            </div>
         @empty
         <div>No projects found!</div>
         @endforelse
-    </div>
+    </main>
 
 @endsection

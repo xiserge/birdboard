@@ -21,15 +21,16 @@
 
     @yield('assets')
 </head>
-<body class="bg-gray-100">
+<body class="bg-gray-200">
 <div id="app">
     <nav class="bg-white">
         <div class="container mx-auto">
             <div class="flex justify-between items-center py-2">
-                <a class="navbar-brand" href="{{ url('/') }}">
-                    {{ config('app.name', 'Laravel') }}
-                </a>
-
+                <h1>
+                    <a class="navbar-brand text-4xl" href="{{ url('/') }}">
+                        {{ config('app.name', 'Laravel') }}
+                    </a>
+                </h1>
                 <div>
                     <!-- Right Side Of Navbar -->
                     <ul class="navbar-nav ml-auto">
