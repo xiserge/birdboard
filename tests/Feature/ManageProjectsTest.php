@@ -17,7 +17,7 @@ class ManageProjectsTest extends TestCase
 	{
 		$this->withoutExceptionHandling();
 
-		$this->actingAs(factory(User::class)->create());
+		$this->signIn();
 
 		$this->get('/projects/create')->assertStatus(200);
 
@@ -26,8 +26,9 @@ class ManageProjectsTest extends TestCase
             'description' => $this->faker->paragraph,
         ];
 
-		$this->post('/projects', $attributes)
-            ->assertRedirect('/projects');
+		$request = $this->post('/projects', $attributes);
+		$project = Project::where($attributes)->first();
+		$request->assertRedirect($project->path());
 
 		$this->assertDatabaseHas('projects', $attributes);
 
@@ -39,7 +40,7 @@ class ManageProjectsTest extends TestCase
         $attributes = factory(Project::class)->raw([
             'title' => ''
         ]);
-        $this->defaultAuth();
+        $this->signIn();
         $this->post('/projects', $attributes)
             ->assertSessionHasErrors('title');
     }
@@ -49,7 +50,7 @@ class ManageProjectsTest extends TestCase
         $attributes = factory(Project::class)->raw([
             'description' => ''
         ]);
-        $this->defaultAuth();
+        $this->signIn();
         $this->post('/projects', $attributes)
             ->assertSessionHasErrors('description');
     }
@@ -72,7 +73,7 @@ class ManageProjectsTest extends TestCase
     {
         $this->withoutExceptionHandling();
 
-        $this->defaultAuth();
+        $this->signIn();
         $project = factory(Project::class)->create([
             'owner_id' => auth()->id(),
         ]);
@@ -84,13 +85,7 @@ class ManageProjectsTest extends TestCase
     public function testUserCannotSeeProjectsOfOthers()
     {
         $project = factory(Project::class)->create();
-        $this->defaultAuth();
+        $this->signIn();
         $this->get($project->path())->assertForbidden();
-    }
-
-    private function defaultAuth()
-    {
-        $user = factory(User::class)->create();
-        $this->be($user);
     }
 }

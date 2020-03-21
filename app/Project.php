@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\User $owner
+ * @property-read \App\Task[] $tasks
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Project newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Project newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Project query()
@@ -37,5 +38,18 @@ class Project extends Model
     public function owner()
     {
         return $this->belongsTo(User::class, 'owner_id');
+    }
+
+    public function tasks()
+    {
+        return $this->hasMany(Task::class);
+    }
+
+
+    public function addTask($body)
+    {
+        return $this->tasks()->create([
+            'body' => $body,
+        ]);
     }
 }

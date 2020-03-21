@@ -9,9 +9,6 @@
                 /
                 <a href="{{ $project->path() }}">{{ $project->title }}</a>
             </p>
-            <a href="{{ url('/projects/create') }}" class="button">
-                Create New Project
-            </a>
         </div>
     </header>
 
@@ -21,10 +18,15 @@
                 <div class="mb-8">
                     <h2 class="mb-3 text-gray-500 font-normal text-lg">Tasks</h2>
 
-                    <div class="card mb-3">Lorem ipsum.</div>
-                    <div class="card mb-3">Lorem ipsum.</div>
-                    <div class="card mb-3">Lorem ipsum.</div>
-                    <div class="card">Lorem ipsum.</div>
+                    @foreach($project->tasks as $task)
+                        <div class="card mb-3">{{ $task->body }}</div>
+                    @endforeach
+                    <div class="card mb-3">
+                        <form action="{{ $project->path().'/tasks' }}" method="POST">
+                            @csrf
+                            <input name="body" class="w-full" placeholder="Add a task...">
+                        </form>
+                    </div>
                 </div>
 
                 <div>

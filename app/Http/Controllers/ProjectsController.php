@@ -24,8 +24,8 @@ class ProjectsController extends Controller
             'description' => 'required',
         ]);
 
-        auth()->user()->projects()->create($validated);
-        return redirect('/projects');
+        $project = auth()->user()->projects()->create($validated);
+        return redirect($project->path());
     }
 
     public function view(Project $project)
