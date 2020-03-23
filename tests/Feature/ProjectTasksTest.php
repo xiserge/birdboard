@@ -31,8 +31,6 @@ class ProjectTasksTest extends TestCase
 
     public function testProjectCanHaveTasks()
     {
-        $this->withoutExceptionHandling();
-
         $this->signIn();
 
         $project = auth()->user()->projects()->create(
@@ -47,6 +45,26 @@ class ProjectTasksTest extends TestCase
         $this->get($project->path())
             ->assertSee('Test body');
     }
+
+    function testTaskCanBeUpdated()
+    {
+        $this->withoutExceptionHandling();
+
+        $this->signIn();
+
+        $task = factory(Task::class)->create();
+
+        $this->patch($task->project->path().'/tasks/'.$task->id, [
+            'body' => 'Updated body',
+            'completed' => 1
+        ]);
+
+        $this->assertDatabaseHas('tasks', [
+            'body' => 'Updated body',
+            'completed' => 1,
+        ]);
+    }
+
 
     public function testTaskRequaredABody()
     {
