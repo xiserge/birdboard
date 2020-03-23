@@ -18,7 +18,7 @@ class ProjectTasksTest extends TestCase
         $this->post($project->path().'/tasks', ['body' => 'Test task'])->assertRedirect('login');
     }
 
-    function testOnlyTheOwnerOfProjectCanAddTasks()
+    function testOnlyOwnerOfProjectCanAddTasks()
     {
         $this->signIn();
         $project = factory(Project::class)->create();
@@ -26,6 +26,18 @@ class ProjectTasksTest extends TestCase
 
         $this->assertDatabaseMissing('tasks', [
             'Test task',
+        ]);
+    }
+
+    public function testOnlyOwnerCanChangeTasks()
+    {
+        $this->signIn();
+        $project = factory(Project::class)->create();
+        $task = $project->addTask('Test task');
+        $this->patch($task->path(), ['body' => 'Updated task'])->assertForbidden();
+
+        $this->assertDatabaseMissing('tasks', [
+            'Updated task',
         ]);
     }
 
@@ -52,9 +64,12 @@ class ProjectTasksTest extends TestCase
 
         $this->signIn();
 
-        $task = factory(Task::class)->create();
+        $project = factory(Project::class)->create([
+            'owner_id' => auth()->id()
+        ]);
+        $task = $project->addTask('Test task');
 
-        $this->patch($task->project->path().'/tasks/'.$task->id, [
+        $this->patch($task->path(), [
             'body' => 'Updated body',
             'completed' => 1
         ]);
@@ -63,10 +78,14 @@ class ProjectTasksTest extends TestCase
             'body' => 'Updated body',
             'completed' => 1,
         ]);
+
+        $this->assertDatabaseMissing('tasks', [
+            'body' => 'Test task',
+            'completed' => 1,
+        ]);
     }
 
-
-    public function testTaskRequaredABody()
+    public function testTaskRequiredABody()
     {
         $this->signIn();
         $attributes = factory(Task::class)->raw([
