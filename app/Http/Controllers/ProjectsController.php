@@ -30,7 +30,7 @@ class ProjectsController extends Controller
 
     public function view(Project $project)
     {
-        if(auth()->user()->isNot($project->owner)) {
+        if (auth()->user()->isNot($project->owner)) {
             abort(403);
         }
         return view('projects.view', compact('project'));
